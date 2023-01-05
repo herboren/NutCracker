@@ -8,7 +8,6 @@ namespace nutcracker
 {
     internal class Program
     {
-
         /// <summary>
         /// The goal of this program is to be intentionally cracked. Because every run
         /// is dynamic, every session is not the same, the password always changes. Use
@@ -16,10 +15,13 @@ namespace nutcracker
         /// </summary>
         const int MAXTIME = 15;
 
-        public static Stopwatch sw = new Stopwatch();
         /// <summary>
-        /// Main
-        /// Password: 
+        /// Timer delayed, 15 seocnds max till session expires
+        /// </summary>
+        public static Stopwatch sw = new Stopwatch();
+        
+        /// <summary>
+        /// Main, Entry Point
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
@@ -93,8 +95,8 @@ namespace nutcracker
             {
                 foreach (var p in Process.GetProcesses())
                 {
-                    p.Refresh();
-                    
+                    // Refresh, check for Ptr == 0
+                    p.Refresh();                    
                     if (p.ProcessName.Contains("nutcracker"))
                     {
                         if (p.MainWindowHandle != IntPtr.Zero)
