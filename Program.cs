@@ -23,18 +23,18 @@ namespace nutcracker
         /// </summary>
         /// <param name="args"></param>
         static void Main(string[] args)
-        {
-            GenDynamicSessionHash(); 
+        {            
             do
             {
                 // Papers please!
                 Console.Write($"Password: ");
 
                 //Validation
-                if (TypedHash(Console.ReadLine()) == GenDynamicSessionHash())
+                if (FlagGranted(TypedHash(Console.ReadLine()), GenDynamicSessionHash()))
                 {
                     Console.WriteLine("Access Granted! Press [Enter] to exit...");
                     Console.ReadLine();
+                    Environment.Exit(0);
                 }
                 else
                     Console.WriteLine("Access Failed!");
@@ -74,7 +74,6 @@ namespace nutcracker
             if (sw.Elapsed.TotalSeconds >= MAXTIME)
             {
                 sw.Stop();
-                Environment.Exit(0);
                 return false;
             }
 
@@ -90,7 +89,6 @@ namespace nutcracker
         static string GenDynamicSessionHash()
         {
             var session = string.Empty;
-
             try
             {
                 foreach (var p in Process.GetProcesses())
@@ -100,8 +98,8 @@ namespace nutcracker
                     if (p.ProcessName.Contains("nutcracker"))
                     {
                         if (p.MainWindowHandle != IntPtr.Zero)
-                        {
-                            session = StringCleanup(p.StartTime.ToString());
+                        {                            
+                            session = StringCleanup(p.StartTime.ToString());                            
                         }
                     }
                 }
@@ -118,11 +116,22 @@ namespace nutcracker
         /// </summary>
         /// <param name="prune"></param>
         /// <returns></returns>
-        public static string StringCleanup(string prune)
+        static string StringCleanup(string prune)
         {
-            string pattern = @"[^\w]";
-            Regex.Replace(prune, pattern, string.Empty);
+            string pattern = @"[\W]";
+            prune = Regex.Replace(prune, pattern, string.Empty);
             return prune;
+        }
+
+        /// <summary>
+        /// Ultimately determines the outcome of users key against system key
+        /// </summary>
+        /// <param name="ukey"></param>
+        /// <param name="skey"></param>
+        /// <returns></returns>
+        static bool FlagGranted(string ukey, string skey)
+        {
+            return ukey == skey;
         }
     }
 }
